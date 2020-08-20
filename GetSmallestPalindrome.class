@@ -1,0 +1,82 @@
+import java.lang.Math;
+
+/*
+**  Алгоритм Манакера
+**  
+**  findPalindromesOdd(String s) - функция для нахождения палиндромов нечетной длины
+**  Возвращаемое значение - массив целых чисел, в котором каждый элемент соответствует
+**                          радиусу палиндрома вокруг соответствующего элемента входной строки
+**  findPalindromesEven(String s) - функция для нахождения палиндромов четной длины
+**  Возвращаемое значение - массив целых чисел, в котором каждый элемент соответствует
+**                          радиусу палиндрома вокруг соответствующего элемента входной строки
+**  getPalindrome(String input) - главная функция, которую можно вызвать для получения в буфер
+**                          вывода самого короткого и лексически наименьшего палиндрома,
+**                          либо -1 при его отсутствии
+**
+*/
+public static class GetSmallestPalindrome {
+  private static int[] findPalindromesOdd(String s) {
+    int[] res = new int[s.length()];
+    int l = 0, r = -1, n = s.length();
+    for (int i = 0; i < n; ++i) {
+      int k = i > r ? 1 : Math.min(res[l + r - i], r - i + 1);
+      while (i + k < n && i - k >= 0 && s.charAt(i + k) == s.charAt(i - k))
+        ++k;
+      res[i] = k;
+      if (i + k - 1 > r) {
+        l = i - k + 1;
+        r = i + k - 1;
+      }
+    }
+    return res;
+  }
+
+  private static int[] findPalindromesEven(String s) {
+    int[] res = new int[s.length()];
+    int l = 0, r = -1, n = s.length();
+    
+    for (int i = 0; i < n; ++i) {
+      int k = i > r ? 0 : Math.min(res[l + r - i + 1], r - i + 1);
+      while (i + k < n && i - k - 1 >= 0 && s.charAt(i + k) == s.charAt(i - k - 1))
+        ++k;
+      res[i] = k;
+      if (i + k - 1 > r) {
+        l = i - k;
+        r = i + k - 1;
+      }
+    }
+    return res;
+  }
+
+  public static void getPalindrome(String input) {
+    String palidrome = "";
+    String temp;
+
+    int[] resEven = findPalindromesEven(input);
+    for (int i = 0; i < input.length(); i++) {
+      if (resEven[i] != 0) {
+        temp = input.substring(i - 1, i + 1);
+        if (palidrome.equals("") == true)
+          palidrome = temp;
+        else if (palidrome.compareTo(temp) > 0)
+          palidrome = temp;
+      }
+    }
+    if (palidrome.equals("") == true) {
+      int[] resOdd = findPalindromesOdd(input);
+      for (int i = 0; i < input.length(); i++) {
+        if (resOdd[i] > 1) {
+          temp = input.substring(i - 1, i + 2);
+          if (palidrome.equals("") == true)
+            palidrome = temp;
+          else if (palidrome.compareTo(temp) > 0)
+            palidrome = temp;
+        }
+      }
+    }
+    if (palidrome.equals("") == true)
+      System.out.println("-1");
+    else
+      System.out.println(palidrome);
+  }
+}
